@@ -18,34 +18,52 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import org.example.billproject.domain.value.Money;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
-@Entity
-@Table(name = "BILL")
+
 public class Bill {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BILL_SEQ")
-    @SequenceGenerator(name = "BILL_SEQ", sequenceName = "BILL_SEQ", allocationSize = 1)
-    @Column(name = "ID")
-    private Long id;
-
-    @Column(name = "BILL_NO", nullable = false, length = 30, unique = true)
-    private String billNumber;
-
-    @Column(name = "ISSUE_DATE", nullable = false)
-    private LocalDate issueDate;
-
-    @Column(name = "DUE_DATE")
-    private LocalDate dueDate;
-
-    @Column(name = "DESCRIPTION", length = 240)
+    private UUID id;
+    private String customerId;
+    private String customerName;
     private String description;
-
-    @Column(name = "STATUS", length = 1, nullable = false)
+    private BigDecimal amount;
+    private LocalDate dueDate;
     private BillStatus status;
+    private OffsetDateTime issuedAt;
+    private OffsetDateTime updatedAt;
+    private String lastPaymentReference;
+
+    public Bill() {
+    }
+
+    public Bill(UUID id,
+                String customerId,
+                String customerName,
+                String description,
+                BigDecimal amount,
+                LocalDate dueDate,
+                BillStatus status,
+                OffsetDateTime issuedAt,
+                OffsetDateTime updatedAt,
+                String lastPaymentReference) {
+        this.id = id;
+        this.customerId = customerId;
+        this.customerName = customerName;
+        this.description = description;
+        this.amount = amount;
+        this.dueDate = dueDate;
+        this.status = status;
+        this.issuedAt = issuedAt;
+        this.updatedAt = updatedAt;
+        this.lastPaymentReference = lastPaymentReference;
+    }
 
     @Embedded
     @AttributeOverrides({
@@ -54,183 +72,97 @@ public class Bill {
     })
     private Money netAmount;
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "currency", column = @Column(name = "TAX_CURRENCY", length = 3)),
-            @AttributeOverride(name = "amount", column = @Column(name = "TAX_AMOUNT", precision = 18, scale = 2))
-    })
-    private Money taxAmount;
-
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "currency", column = @Column(name = "TOTAL_CURRENCY", length = 3)),
-            @AttributeOverride(name = "amount", column = @Column(name = "TOTAL_AMOUNT", precision = 18, scale = 2))
-    })
-    private Money totalAmount;
-
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "currency", column = @Column(name = "PAID_CURRENCY", length = 3)),
-            @AttributeOverride(name = "amount", column = @Column(name = "PAID_AMOUNT", precision = 18, scale = 2))
-    })
-    private Money paidAmount;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "CUSTOMER_ID", nullable = false)
-    private Customer customer;
-
-    @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<BillLine> lines = new ArrayList<>();
-
-    @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Payment> payments = new ArrayList<>();
-
-    @Version
-    @Column(name = "VERSION")
-    private Long version;
-
-    protected Bill() {
-    }
-
-    public Bill(String billNumber, LocalDate issueDate, Customer customer) {
-        this.billNumber = billNumber;
-        this.issueDate = issueDate;
-        this.customer = customer;
-        this.status = BillStatus.DRAFT;
-    }
-
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public String getBillNumber() {
-        return billNumber;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
-    public LocalDate getIssueDate() {
-        return issueDate;
+    public String getCustomerId() {
+        return customerId;
     }
 
-    public LocalDate getDueDate() {
-        return dueDate;
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
     public BillStatus getStatus() {
         return status;
     }
 
-    public Money getNetAmount() {
-        return netAmount;
-    }
-
-    public Money getTaxAmount() {
-        return taxAmount;
-    }
-
-    public Money getTotalAmount() {
-        return totalAmount;
-    }
-
-    public Money getPaidAmount() {
-        return paidAmount;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public List<BillLine> getLines() {
-        return lines;
-    }
-
-    public List<Payment> getPayments() {
-        return payments;
-    }
-
-    public void changeStatus(BillStatus status) {
+    public void setStatus(BillStatus status) {
         this.status = status;
     }
 
-    public void schedule(LocalDate dueDate) {
-        this.dueDate = dueDate;
+    public OffsetDateTime getIssuedAt() {
+        return issuedAt;
     }
 
-    public void describe(String description) {
-        this.description = description;
+    public void setIssuedAt(OffsetDateTime issuedAt) {
+        this.issuedAt = issuedAt;
     }
 
-    public void recalculateTotals() {
-        if (lines.isEmpty()) {
-            this.netAmount = null;
-            this.taxAmount = null;
-            this.totalAmount = null;
-            return;
-        }
-
-        String currency = null;
-        java.math.BigDecimal net = java.math.BigDecimal.ZERO;
-        java.math.BigDecimal tax = java.math.BigDecimal.ZERO;
-        for (BillLine line : lines) {
-            if (currency == null) {
-                if (line.getLineTotal() != null) {
-                    currency = line.getLineTotal().getCurrency();
-                } else if (line.getNetAmount() != null) {
-                    currency = line.getNetAmount().getCurrency();
-                }
-            }
-            if (line.getNetAmount() != null) {
-                net = net.add(line.getNetAmount().getAmount());
-            }
-            if (line.getTaxAmount() != null) {
-                tax = tax.add(line.getTaxAmount().getAmount());
-            }
-        }
-        if (currency == null) {
-            this.netAmount = null;
-            this.taxAmount = null;
-            this.totalAmount = null;
-            return;
-        }
-        this.netAmount = new Money(currency, net);
-        this.taxAmount = new Money(currency, tax);
-        this.totalAmount = new Money(currency, net.add(tax));
+    public OffsetDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void addLine(BillLine line) {
-        line.attachToBill(this);
-        this.lines.add(line);
-        recalculateTotals();
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
-    public void addPayment(Payment payment) {
-        payment.attachToBill(this);
-        this.payments.add(payment);
-        recalculatePaidAmount();
+    public String getLastPaymentReference() {
+        return lastPaymentReference;
     }
 
-    private void recalculatePaidAmount() {
-        if (payments.isEmpty()) {
-            this.paidAmount = null;
-            return;
-        }
-        String currency = null;
-        java.math.BigDecimal totalPaid = java.math.BigDecimal.ZERO;
-        for (Payment payment : payments) {
-            if (currency == null && payment.getAmount() != null) {
-                currency = payment.getAmount().getCurrency();
-            }
-            if (payment.getAmount() != null) {
-                totalPaid = totalPaid.add(payment.getAmount().getAmount());
-            }
-        }
-        if (currency == null) {
-            this.paidAmount = null;
-            return;
-        }
-        this.paidAmount = new Money(currency, totalPaid);
+    public void setLastPaymentReference(String lastPaymentReference) {
+        this.lastPaymentReference = lastPaymentReference;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Bill bill = (Bill) o;
+        return Objects.equals(id, bill.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
 }
