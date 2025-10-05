@@ -1,0 +1,60 @@
+= Bill Service API
+:toc: left
+:toclevels: 2
+
+This section documents the Bill REST API produced by the Spring Boot application. The snippets are generated automatically from the controller tests.
+
+NOTE: Run the Spring REST Docs test suite (for example with `./mvnw test`) before building this document to refresh the snippets.
+
+== List bills
+include::{snippets}/bills-list/http-request.adoc[opts=optional]
+include::{snippets}/bills-list/request-parameters.adoc[opts=optional]
+include::{snippets}/bills-list/http-response.adoc[opts=optional]
+include::{snippets}/bills-list/response-fields.adoc[opts=optional]
+
+== Retrieve bill by id
+include::{snippets}/bills-get/path-parameters.adoc[opts=optional]
+include::{snippets}/bills-get/http-request.adoc[opts=optional]
+include::{snippets}/bills-get/http-response.adoc[opts=optional]
+include::{snippets}/bills-get/response-fields.adoc[opts=optional]
+
+== Create bill
+include::{snippets}/bills-create/http-request.adoc[opts=optional]
+include::{snippets}/bills-create/request-fields.adoc[opts=optional]
+include::{snippets}/bills-create/http-response.adoc[opts=optional]
+include::{snippets}/bills-create/response-fields.adoc[opts=optional]
+
+== Update bill
+include::{snippets}/bills-update/path-parameters.adoc[opts=optional]
+include::{snippets}/bills-update/http-request.adoc[opts=optional]
+include::{snippets}/bills-update/request-fields.adoc[opts=optional]
+include::{snippets}/bills-update/http-response.adoc[opts=optional]
+include::{snippets}/bills-update/response-fields.adoc[opts=optional]
+
+== Update bill status
+include::{snippets}/bills-update-status/path-parameters.adoc[opts=optional]
+include::{snippets}/bills-update-status/http-request.adoc[opts=optional]
+include::{snippets}/bills-update-status/request-fields.adoc[opts=optional]
+include::{snippets}/bills-update-status/http-response.adoc[opts=optional]
+include::{snippets}/bills-update-status/response-fields.adoc[opts=optional]
+
+== Register payment
+include::{snippets}/bills-register-payment/path-parameters.adoc[opts=optional]
+include::{snippets}/bills-register-payment/http-request.adoc[opts=optional]
+include::{snippets}/bills-register-payment/request-fields.adoc[opts=optional]
+include::{snippets}/bills-register-payment/http-response.adoc[opts=optional]
+include::{snippets}/bills-register-payment/response-fields.adoc[opts=optional]
+
+== Delete bill
+include::{snippets}/bills-delete/path-parameters.adoc[opts=optional]
+include::{snippets}/bills-delete/http-request.adoc[opts=optional]
+include::{snippets}/bills-delete/http-response.adoc[opts=optional]
+
+== Error responses
+include::{snippets}/bills-not-found/path-parameters.adoc[opts=optional]
+include::{snippets}/bills-not-found/http-response.adoc[opts=optional]
+include::{snippets}/bills-not-found/response-fields.adoc[opts=optional]
+
+include::{snippets}/bills-validation-error/http-request.adoc[opts=optional]
+include::{snippets}/bills-validation-error/http-response.adoc[opts=optional]
+include::{snippets}/bills-validation-error/response-fields.adoc[opts=optional]
