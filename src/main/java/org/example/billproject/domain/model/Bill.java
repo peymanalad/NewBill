@@ -26,19 +26,49 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-
+@Entity
+@Table(name = "BILL")
 public class Bill {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "ID", nullable = false, updatable = false)
     private UUID id;
+
+    @Column(name = "CUSTOMER_ID", nullable = false, length = 50)
     private String customerId;
+
+    @Column(name = "CUSTOMER_NAME", nullable = false, length = 120)
     private String customerName;
+
+    @Column(name = "DESCRIPTION", length = 240)
     private String description;
+
+    @Column(name = "AMOUNT", precision = 18, scale = 2, nullable = false)
     private BigDecimal amount;
+
+    @Column(name = "DUE_DATE", nullable = false)
     private LocalDate dueDate;
+
+    @Column(name = "STATUS", length = 1, nullable = false)
     private BillStatus status;
+
+    @Column(name = "ISSUED_AT", nullable = false)
     private OffsetDateTime issuedAt;
+
+    @Column(name = "UPDATED_AT", nullable = false)
     private OffsetDateTime updatedAt;
+
+    @Column(name = "LAST_PAYMENT_REF", length = 64)
     private String lastPaymentReference;
+
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "currency", column = @Column(name = "NET_CURRENCY", length = 3)),
+            @AttributeOverride(name = "amount", column = @Column(name = "NET_AMOUNT", precision = 18, scale = 2))
+    })
+    private Money netAmount;
+
 
     public Bill() {
     }
@@ -64,13 +94,6 @@ public class Bill {
         this.updatedAt = updatedAt;
         this.lastPaymentReference = lastPaymentReference;
     }
-
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "currency", column = @Column(name = "NET_CURRENCY", length = 3)),
-            @AttributeOverride(name = "amount", column = @Column(name = "NET_AMOUNT", precision = 18, scale = 2))
-    })
-    private Money netAmount;
 
     public UUID getId() {
         return id;
@@ -152,6 +175,13 @@ public class Bill {
         this.lastPaymentReference = lastPaymentReference;
     }
 
+    public Money getNetAmount() {
+        return netAmount;
+    }
+
+    public void setNetAmount(Money netAmount) {
+        this.netAmount = netAmount;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

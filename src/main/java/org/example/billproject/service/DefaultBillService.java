@@ -39,7 +39,7 @@ public class DefaultBillService implements BillService {
         bill.setId(id);
         bill.setStatus(Optional.ofNullable(bill.getStatus()).orElse(existing.getStatus()));
         bill.setIssuedAt(Optional.ofNullable(bill.getIssuedAt()).orElse(existing.getIssuedAt()));
-        bill.setUpdatedAt(OffsetDateTime.now());
+        bill.setUpdatedAt(nextUpdateTimestamp(existing.getUpdatedAt()));
         bill.setLastPaymentReference(existing.getLastPaymentReference());
         store.put(id, cloneBill(bill));
         return cloneBill(bill);
@@ -49,7 +49,7 @@ public class DefaultBillService implements BillService {
     public Bill updateStatus(UUID id, BillStatus status) {
         Bill existing = getRequired(id);
         existing.setStatus(status);
-        existing.setUpdatedAt(OffsetDateTime.now());
+        existing.setUpdatedAt(nextUpdateTimestamp(existing.getUpdatedAt()));
         store.put(id, cloneBill(existing));
         return cloneBill(existing);
     }
@@ -58,7 +58,7 @@ public class DefaultBillService implements BillService {
     public Bill registerPayment(UUID id, String paymentReference) {
         Bill existing = getRequired(id);
         existing.setStatus(BillStatus.PAID);
-        existing.setUpdatedAt(OffsetDateTime.now());
+        existing.setUpdatedAt(nextUpdateTimestamp(existing.getUpdatedAt()));
         existing.setLastPaymentReference(paymentReference);
         store.put(id, cloneBill(existing));
         return cloneBill(existing);
@@ -94,7 +94,7 @@ public class DefaultBillService implements BillService {
     }
 
     private Bill cloneBill(Bill bill) {
-        return new Bill(
+        Bill copy = new Bill(
                 bill.getId(),
                 bill.getCustomerId(),
                 bill.getCustomerName(),
@@ -105,5 +105,17 @@ public class DefaultBillService implements BillService {
                 bill.getIssuedAt(),
                 bill.getUpdatedAt(),
                 bill.getLastPaymentReference());
+        copy.setNetAmount(bill.getNetAmount());
+        return copy;
+    }
+    private OffsetDateTime nextUpdateTimestamp(OffsetDateTime previous) {
+        OffsetDateTime now = OffsetDateTime.now();
+        if (previous == null) {
+            return now;
+        }
+        if (!now.isAfter(previous)) {
+            return previous.plusNanos(1);
+        }
+        return now;
     }
 }
