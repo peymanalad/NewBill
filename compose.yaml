@@ -5,5 +5,7 @@ services:
       - 'ORACLE_PASSWORD=secret'
       - 'APP_USER=DARIOBILL'
       - 'APP_USER_PASSWORD=Rayanparsi1900y'
+      - 'ORACLE_ALLOW_REMOTE=true'
     ports:
-      - '1521'
+      - "1521:1521"
+      - "5500:5500"
